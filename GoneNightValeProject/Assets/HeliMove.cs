@@ -10,7 +10,7 @@ public class HeliMove : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		float speed = -0.1f;
+		float speed = -0.3f;
 		transform.position += transform.forward * speed;
 	}
 }
