@@ -3,7 +3,20 @@ using System.Collections;
 
 public class Radio : MonoBehaviour {
 
+	public AudioClip opening;
+	public AudioClip newJob;
 	public AudioClip moveCrates;
+	public AudioClip takeCrate;
+	public AudioClip putTrunk;
+	public AudioClip driveHome;
+	public AudioClip gotHome;
+	public AudioClip turnIgnition;
+	public AudioClip radioComesAlive;
+	public AudioClip scrubLands;
+	public AudioClip lookBack;
+	public AudioClip punish;
+	public AudioClip ending;
+	public AudioClip getOut;
 
 	// Use this for initialization
 	void Start () {
@@ -13,13 +26,6 @@ public class Radio : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-		if (Input.GetKey ("r")) {
-			AudioSource bgMusic = GameObject.Find("Main Camera").audio;
-			GameObject.Find ("TrucksMissionMarker").renderer.enabled = true;
-			bgMusic.volume = 0.25f;
-			audio.Play ();
-			Invoke ("restoreBgMusic", 15f);
-		}
 	
 	}
 
