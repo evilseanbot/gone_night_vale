@@ -3,8 +3,9 @@ using System.Collections;
 
 public class Control : MonoBehaviour {
 
-	public bool inCar = true;
+	public bool inCar = false;
 	public bool carryingCrate = false;
+	public bool noCarCinematic = false;
 
 	public bool crateInTrunk = false;
 
@@ -32,7 +33,7 @@ public class Control : MonoBehaviour {
 				vel += accel;
 			} 
 			if (Input.GetKey ("s")) {
-				vel = vel * 0.9f;
+				vel -= (accel/2);
 			} 
 
 			
@@ -46,24 +47,27 @@ public class Control : MonoBehaviour {
 			}
 
 			if (Input.GetMouseButtonDown (0)) {
-				inCar = false;
-				Vector3 outOfCar = car.transform.right * 2f;
-				transform.position = car.transform.position + outOfCar; 
+				exitCar ();
 			}
 		}
 		else {
+			Vector3 newPos = transform.position;
 			if (Input.GetKey ("w")) {
-				transform.position += transform.forward * 0.05f;
+				newPos += (transform.forward * 0.05f);
+
+				//rigidbody.MovePosition (transform.position + (transform.forward * 0.05f));
 			} 
 			if (Input.GetKey ("s")) {
-				transform.position += transform.forward * -0.05f;
+				newPos += (transform.forward * -0.05f);
 			} 
 			if (Input.GetKey ("d")) {
-				transform.position += transform.right * 0.05f;
+				newPos += (transform.right * 0.05f);
 			}
 			if (Input.GetKey ("a")) {
-				transform.position += transform.right * -0.05f;
+				newPos += (transform.right * -0.05f);
 			}
+
+			rigidbody.MovePosition (newPos);
 			
 			if (Input.GetMouseButtonDown (0)) {
 				if (GameObject.Find ("Crate") != null) {
@@ -82,15 +86,15 @@ public class Control : MonoBehaviour {
 				}
 
 
-				if (Vector3.Distance (car.transform.position, transform.position) < 2f && !carryingCrate) {
-					inCar = true;
-					transform.position = car.transform.position; 
+				if (Vector3.Distance (car.transform.position, transform.position) < 2f && !carryingCrate && !noCarCinematic) {
+					enterCar();
 				}
 			}
 		}
 
 
-		car.transform.position += -car.transform.forward * vel;
+		//car.transform.position += -car.transform.forward * vel;
+		car.rigidbody.MovePosition (car.transform.position - (car.transform.forward * vel));;
 		if (inCar) {
 			transform.position = car.transform.position;
 			vel = vel * 0.99f;
@@ -105,4 +109,29 @@ public class Control : MonoBehaviour {
 		}
 
 	}
+
+	void enterCar() {
+		inCar = true;
+		transform.position = car.transform.position; 
+		rigidbody.isKinematic = true;
+		GetComponent<CapsuleCollider>().enabled = false;
+		GameObject.Find ("FlashLight").light.enabled = false;
+		GameObject.Find ("InteriorCarLight").light.enabled = false;
+		//GameObject.Find ("LeftTailLight").light.enabled = false;
+		//GameObject.Find ("RightTailLight").light.enabled = false;
+	}
+
+	void exitCar() {
+		inCar = false;
+		Vector3 outOfCar = car.transform.right * 2f;
+		transform.position = car.transform.position + outOfCar; 
+		rigidbody.isKinematic = false;
+		GetComponent<CapsuleCollider>().enabled = true;
+
+		GameObject.Find ("FlashLight").light.enabled = true;
+		GameObject.Find ("InteriorCarLight").light.enabled = true;
+		//GameObject.Find ("LeftTailLight").light.enabled = true;
+		//GameObject.Find ("RightTailLight").light.enabled = true;
+	}
+
 }

@@ -6,6 +6,12 @@ public class PlayerMissionTracker : MonoBehaviour {
 	private GameObject truckMissionSite;
 	private GameObject homeMissionSite;
 	private GameObject scrubMissionSite;
+	private GameObject pitSite;
+	private GameObject heliSpawnerA;
+	private GameObject heliSpawnerB;
+
+
+	public GameObject pit;
 
 	private GameObject radio;
 	private int mission = 1;
@@ -34,9 +40,13 @@ public class PlayerMissionTracker : MonoBehaviour {
 		truckMissionSite = GameObject.Find ("TrucksMissionSite");
 		homeMissionSite = GameObject.Find ("HomeMissionSite");
 		scrubMissionSite = GameObject.Find ("ScrubMissionSite");
+		pitSite = GameObject.Find ("PitSite");
 
 		radio = GameObject.Find ("Radio");
 		player = GameObject.Find ("First Person Controller");
+
+		heliSpawnerA = GameObject.Find ("HeliSpawnerA");
+		heliSpawnerB = GameObject.Find ("HeliSpawnerB");
 	}
 	
 	// Update is called once per frame
@@ -81,6 +91,11 @@ public class PlayerMissionTracker : MonoBehaviour {
 		if (mission == 10) {
 			if (player.GetComponent<Control>().inCar) {
 				mission = 11;
+
+				heliSpawnerA.GetComponent<HeliSpawner>().timeBetweenHelis = 1f;
+				heliSpawnerB.GetComponent<HeliSpawner>().timeBetweenHelis = 1f;
+
+
 				radio.audio.clip = radio.GetComponent<Radio>().radioComesAlive;
 				radio.audio.Play ();
 				Invoke ("highlightScrubLandsMission", radio.audio.clip.length);
@@ -95,6 +110,7 @@ public class PlayerMissionTracker : MonoBehaviour {
 
 		if (mission == 13) {
 			if (!player.GetComponent<Control>().inCar) {
+				player.GetComponent<Control>().noCarCinematic = true;
 				mission = 14;
 				radio.audio.clip = radio.GetComponent<Radio>().lookBack;
 				radio.audio.Play ();
@@ -194,6 +210,9 @@ public class PlayerMissionTracker : MonoBehaviour {
 
 	void playPunishMission () {
 		//mission = 5;
+		Instantiate (pit, pitSite.transform.position, pitSite.transform.rotation);
+		transform.position = pitSite.transform.position;
+
 		radio.audio.clip = radio.audio.clip = radio.GetComponent<Radio>().punish;
 		radio.audio.Play ();
 		Invoke ("playEndingMission", radio.audio.clip.length);
@@ -201,10 +220,23 @@ public class PlayerMissionTracker : MonoBehaviour {
 
 	void playEndingMission () {
 		//mission = 5;
+
 		radio.audio.clip = radio.audio.clip = radio.GetComponent<Radio>().ending;
 		radio.audio.Play ();
+		Invoke ("playTextScroll", 41.5f);
+		Invoke ("playScreenFadeOut", 56.5f);
+
 	}
 
+	void playTextScroll() {
+		GameObject.Find ("ScreenText").renderer.enabled = true;
+		GameObject.Find ("ScreenText").GetComponent<RisingText>().enabled = true;
+	}
+
+	void playScreenFadeOut() {
+		GameObject.Find ("ScreenFade").renderer.enabled = true;
+		GameObject.Find ("ScreenFade").GetComponent<Animator>().enabled = true;
+	}
 
 
 	void restoreBgMusic() {
